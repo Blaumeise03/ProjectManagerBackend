@@ -11,65 +11,48 @@ public class POJOMapper {
     private POJOMapper() {
     }
 
-    public static Object map(Object o) throws POJOMappingException {
-        if(o.getClass().isAnnotationPresent(POJO.class)) {
+    public static Object map(Object or) throws POJOMappingException {
+        if(or.getClass().isAnnotationPresent(POJO.class)) {
             try {
                 //Get class of result object
-                POJO a = o.getClass().getAnnotation(POJO.class);
+                POJO a = or.getClass().getAnnotation(POJO.class);
                 Class<?> resClass = a.mappingClass();
                 Object res = resClass.getConstructor().newInstance();
-                Field[] fields = o.getClass().getDeclaredFields();
+                Field[] fields = or.getClass().getDeclaredFields();
                 //iterate over all fields
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(POJOData.class)) {
+                        POJOData pojoData = field.getAnnotation(POJOData.class);
                         //Current field should be mapped onto the target object
-                        String invokeMethod = field.getAnnotation(POJOData.class).invokeMethod();
-                        String fieldName =
-                                field.getName().substring(0, 1).toUpperCase() +
-                                        (field.getName().length() > 1 ? field.getName().substring(1) : "");
+                        String fieldName = convertName(field.getName());
                         String getterName = (field.getType().equals(Boolean.TYPE) ? "is" : "get") + fieldName;
-                        Object value = o.getClass().getMethod(getterName).invoke(o);
-                        if (!field.getAnnotation(POJOData.class).blocked()) {
-                            if(invokeMethod.equals("NONE"))
-                                //Default mode for direct mapping
-                                resClass.getMethod("set" + fieldName, field.getType()).invoke(res, value);
-                            else {
-                                //Special method has to be invoked to convert an object e.g. into its ID
-                                if(value != null) {
-                                    //Object is not null, method can be invoked
-                                    resClass.getMethod(
-                                            "set" + fieldName,
-                                            value.getClass().getMethod(invokeMethod).getReturnType()
-                                    ).invoke(res, value.getClass().getMethod(invokeMethod).invoke(value));
-                                } else {
-                                    //Object is null, if the target field is a number, -1 will be used
-                                    Class<?> r = field.getType().getMethod(invokeMethod).getReturnType();
-                                    if(r.equals(Integer.TYPE) || r.equals(Long.TYPE) || r.equals(Integer.class) || r.equals(Long.class)) {
-                                        resClass.getMethod(
-                                                "set" + fieldName,
-                                               Long.TYPE
-                                        ).invoke(res, -1);
-                                    } else throw new POJOMappingException(String.format("Can't map field %s of class %s because it's null", field.getName(), o.getClass()));
-                                }
-                            }
+                        String setterName = "set" + (pojoData.to().isBlank() ? fieldName : convertName(pojoData.to()));
+                        Object value = or.getClass().getMethod(getterName).invoke(or);
+                        Class<?> orType = field.getType();
+                        Class<?> targetType =
+                                pojoData.to().isEmpty() ?
+                                        res.getClass().getDeclaredField(field.getName()).getType() :
+                                        res.getClass().getDeclaredField(pojoData.to()).getType();
+                        if(!pojoData.blocked()) {
+                            POJOConverter<Object, Object> converter = POJOConverter.DefaultConverter.getDefaultConverter(orType, targetType);
+                            Object resultValue = converter.convert(value);
+                            resClass.getMethod(setterName, targetType).invoke(res, resultValue);
                         }
                         if(field.isAnnotationPresent(POJOExtraMapping.class) && value != null) {
-                            String nullCheck = field.getAnnotation(POJOExtraMapping.class).nullCheckMethod();
-                            boolean isNull = !nullCheck.equals("NONE") && (boolean) value.getClass().getMethod(nullCheck).invoke(value);
-                            if(!isNull) {
-                                POJOExtraMapping m = field.getAnnotation(POJOExtraMapping.class);
-                                resClass.getMethod(m.invokeMethodTo(), m.type())
-                                        .invoke(res, value.getClass().getMethod(m.invokeMethodFrom()).invoke(value));
-                            }
+                            POJOExtraMapping extraMapping = field.getAnnotation(POJOExtraMapping.class);
+                            Field extraTarget = res.getClass().getDeclaredField(extraMapping.to());
+                            POJOConverter<Object, Object> converter = POJOConverter.DefaultConverter.getDefaultConverter(orType, extraTarget.getType());
+                            Object resultValue = converter.convert(value);
+                            resClass.getMethod("set" + convertName(extraTarget.getName()),extraTarget.getType()).invoke(res, resultValue);
                         }
                     }
                 }
                 return res;
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InstantiationException e) {
-                throw new POJOMappingException("Error while mapping POJO", e);
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchFieldException | NullPointerException e) {
+                throw new POJOMappingException("Error while mapping POJO \"" + or.getClass().getName() + "\"", e);
             }
         }
-        throw new POJOMappingException("Object " + o + " is not an POJO Object!");
+        throw new POJOMappingException("Object " + or + " is not an POJO Object!");
     }
 
     public static List<? extends Object> mapAll(List<? extends Object> objects) throws POJOMappingException {
@@ -78,5 +61,9 @@ public class POJOMapper {
             res.add(map(o));
         }
         return res;
+    }
+
+    private static String convertName(String name) {
+        return name.substring(0, 1).toUpperCase() + (name.length() > 1 ? name.substring(1) : "");
     }
 }

@@ -8,6 +8,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface POJOData {
+    @Deprecated(since = "0.2")
     String invokeMethod() default "NONE";
+
     boolean blocked() default false;
+
+    String to() default "";
 }

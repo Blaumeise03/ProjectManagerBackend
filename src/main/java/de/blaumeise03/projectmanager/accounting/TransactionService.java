@@ -51,21 +51,29 @@ public class TransactionService {
     public Transaction save(User user, TransactionPOJO transactionPOJO) throws MissingPermissionsException, POJOMappingException {
         //Player walletOwner = transactionPOJO.fromID != -1 ? playerRepository.getById(transactionPOJO.fromID) : null;
         boolean isAdmin = user.hasAdminPerms(-1);
-        if(user.ownsWallet(transactionPOJO.fromID) || isAdmin) {
+        if(transactionPOJO.from == null && transactionPOJO.nameFrom != null) {
+            transactionPOJO.from = playerRepository.findByName(transactionPOJO.nameFrom).orElseThrow(EntityNotFoundException::new).getUid();
+        }
+        if(transactionPOJO.to == null && transactionPOJO.nameTo != null) {
+            transactionPOJO.to = playerRepository.findByName(transactionPOJO.nameTo).orElseThrow(EntityNotFoundException::new).getUid();
+        }
+        if(transactionPOJO.from != null && user.ownsWallet(transactionPOJO.from) || isAdmin) {
             if(transactionPOJO.isVerified() && !isAdmin)
                 throw new MissingPermissionsException("Missing permissions to verify transactions!");
-            Transaction transaction = transactionRepository.findById(transactionPOJO.tid).orElseThrow(EntityNotFoundException::new);
-            if(transaction.isVerified() && !isAdmin)
-                throw new MissingPermissionsException("Missing permissions to edit verified transactions!");
-
+            Transaction transaction;
+            if(transactionPOJO.tid != null) {
+                transaction = transactionRepository.findById(transactionPOJO.tid).orElseThrow(EntityNotFoundException::new);
+                if (transaction.isVerified() && !isAdmin)
+                    throw new MissingPermissionsException("Missing permissions to edit verified transactions!");
+            }
             transaction = (Transaction) POJOMapper.map(transactionPOJO);
-            transaction.setFrom(transactionPOJO.getFromID() != -1 ? playerRepository.findById(transactionPOJO.getFromID()).orElseThrow(EntityNotFoundException::new) : null);
-            transaction.setTo(transactionPOJO.getToID() != -1 ? playerRepository.findById(transactionPOJO.getToID()).orElseThrow(EntityNotFoundException::new) : null);
+            transaction.setFrom(transactionPOJO.getFrom() != -1 ? playerRepository.findById(transactionPOJO.getFrom()).orElseThrow(EntityNotFoundException::new) : null);
+            transaction.setTo(transactionPOJO.getTo() != -1 ? playerRepository.findById(transactionPOJO.getTo()).orElseThrow(EntityNotFoundException::new) : null);
             if(transaction.getFrom() == null && transaction.getTo() == null)
                 throw new UnsupportedOperationException("The transaction need to have at least one player!");
             return transactionRepository.save(transaction);
         } else {
-            throw new MissingPermissionsException(String.format("The user %d (%s) does not has access to wallet %d", user.getId(), user.getUsername(), transactionPOJO.getFromID()));
+            throw new MissingPermissionsException(String.format("The user %d (%s) does not has access to wallet %d", user.getId(), user.getUsername(), transactionPOJO.getFrom()));
         }
     }
 

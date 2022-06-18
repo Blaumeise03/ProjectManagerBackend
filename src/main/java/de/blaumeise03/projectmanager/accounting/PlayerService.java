@@ -15,19 +15,19 @@ public class PlayerService {
     @Autowired
     CorpRepository corpRepository;
 
-    List<Player> getByCorpTag(String corpTag) {
+    public List<Player> getByCorpTag(String corpTag) {
         Optional<Corp> corp = corpRepository.findByTag(corpTag);
         if(corp.isEmpty()) throw new EntityNotFoundException("Corp with tag \"" + corpTag + "\" was not found in the database!");
         return playerRepository.findByCorp(corp.get());
     }
 
-    List<Player> getByCorpID(int id) {
+    public List<Player> getByCorpID(int id) {
         Optional<Corp> corp = corpRepository.findById(id);
         if(corp.isEmpty()) throw new EntityNotFoundException("Corp with id " + id + " was not found in the database!");
         return playerRepository.findByCorp(corp.get());
     }
 
-    Player findByID(int id) {
+    public Player findByID(int id) {
         return playerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 }

@@ -26,9 +26,8 @@ public class PlayerPOJO {
     @POJOData
     private String ingameID;
 
-    @POJOData(blocked = true)
-    @POJOExtraMapping(invokeMethodFrom = "intValue", invokeMethodTo = "loadCorp", type = Integer.class)
-    private Integer corpID;
+    @POJOData
+    private Integer corp;
 
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
@@ -41,7 +40,7 @@ public class PlayerPOJO {
     @POJOData
     private Integer parent = null;
 
-    @POJOExtraMapping(invokeMethodFrom = "longValue", invokeMethodTo = "loadUser", nullCheckMethod = "isNew", type = Long.class)
+    @POJOData
     private Long user;
 
     public void setUser(long user) {

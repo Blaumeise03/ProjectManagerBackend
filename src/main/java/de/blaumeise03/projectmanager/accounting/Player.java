@@ -41,8 +41,7 @@ public class Player{
     @POJOData
     private String ingameID;
 
-    @POJOData(blocked = true)
-    @POJOExtraMapping(invokeMethodFrom = "getCid", invokeMethodTo = "setCorpID", type = Integer.class)
+    @POJOData
     @ManyToOne
     @JoinColumn(name="CID", foreignKey=@ForeignKey(name = "Fk_corp"))
     private Corp corp;
@@ -56,7 +55,7 @@ public class Player{
     @Column(name = "parent")
     private Integer parent = null;
 
-    @POJOData(invokeMethod = "getId")
+    @POJOData
     @ManyToOne
     @JoinColumn(name="userID", foreignKey=@ForeignKey(name = "Fk_user"))
     private User user;

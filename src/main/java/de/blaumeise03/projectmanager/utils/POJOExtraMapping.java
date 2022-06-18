@@ -8,8 +8,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface POJOExtraMapping {
-    String invokeMethodFrom();
-    String invokeMethodTo();
+    @Deprecated
+    String invokeMethodFrom() default "";
+    @Deprecated
+    String invokeMethodTo() default "";
+    @Deprecated
     String nullCheckMethod() default "NONE";
-    Class<?> type();
+    @Deprecated
+    Class<?> type() default Object.class;
+
+    String to();
 }
