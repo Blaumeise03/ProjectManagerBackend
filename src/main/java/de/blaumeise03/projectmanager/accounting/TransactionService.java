@@ -1,6 +1,5 @@
 package de.blaumeise03.projectmanager.accounting;
 
-import de.blaumeise03.projectmanager.exceptions.EntityNotFoundException;
 import de.blaumeise03.projectmanager.exceptions.MissingPermissionsException;
 import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
 import de.blaumeise03.projectmanager.userManagement.User;
@@ -8,6 +7,7 @@ import de.blaumeise03.projectmanager.utils.POJOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -22,12 +22,16 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
-    public Transaction findById(int id){
-        return transactionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public Transaction findById(User user, int id) throws MissingPermissionsException {
+        if(hasAccessToTransaction(user, id)) {
+            return transactionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        } else {
+            throw new MissingPermissionsException(String.format("The user %d (%s) does not has read-access to the transaction %d ", user.getId(), user.getUsername(), id));
+        }
     }
 
     public long getSumByPlayer(User user, int playerID) throws MissingPermissionsException {
-        Player player = playerRepository.getById(playerID);
+        Player player = playerRepository.getReferenceById(playerID);
         if(hasAccessToWallet(user, playerID)) {
             return transactionRepository.getWalletSumOfPlayer(playerID);
         } else {
@@ -36,29 +40,27 @@ public class TransactionService {
     }
 
     public List<Transaction> findAllByUserID(User user, int playerID) throws MissingPermissionsException {
-        Player player = playerRepository.getById(playerID);
+        Player player = playerRepository.getReferenceById(playerID);
         boolean hasAccess = hasAccessToWallet(user, playerID);
         if(hasAccess)
             return transactionRepository.findByFromOrToOrderByTimeDesc(player, player);
         throw new MissingPermissionsException(String.format("The user %d (%s) does not has read-access to wallet of player %d (%s)", user.getId(), user.getUsername(), playerID, player.getName()));
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Transaction save(User user, TransactionPOJO transactionPOJO) throws MissingPermissionsException, POJOMappingException {
         //Player walletOwner = transactionPOJO.fromID != -1 ? playerRepository.getById(transactionPOJO.fromID) : null;
         boolean isAdmin = user.hasAdminPerms(-1);
         if(user.ownsWallet(transactionPOJO.fromID) || isAdmin) {
             if(transactionPOJO.isVerified() && !isAdmin)
                 throw new MissingPermissionsException("Missing permissions to verify transactions!");
-            Transaction transaction;
-            try {
-                transaction = transactionRepository.getById(transactionPOJO.tid);
-                if(transaction.isVerified() && !isAdmin)
-                    throw new MissingPermissionsException("Missing permissions to edit verified transactions!");
-            }catch (javax.persistence.EntityNotFoundException ignored){}
+            Transaction transaction = transactionRepository.findById(transactionPOJO.tid).orElseThrow(EntityNotFoundException::new);
+            if(transaction.isVerified() && !isAdmin)
+                throw new MissingPermissionsException("Missing permissions to edit verified transactions!");
 
             transaction = (Transaction) POJOMapper.map(transactionPOJO);
-            transaction.setFrom(transactionPOJO.getFromID() != -1 ? playerRepository.getById(transactionPOJO.getFromID()) : null);
-            transaction.setTo(transactionPOJO.getToID() != -1 ? playerRepository.getById(transactionPOJO.getToID()) : null);
+            transaction.setFrom(transactionPOJO.getFromID() != -1 ? playerRepository.findById(transactionPOJO.getFromID()).orElseThrow(EntityNotFoundException::new) : null);
+            transaction.setTo(transactionPOJO.getToID() != -1 ? playerRepository.findById(transactionPOJO.getToID()).orElseThrow(EntityNotFoundException::new) : null);
             if(transaction.getFrom() == null && transaction.getTo() == null)
                 throw new UnsupportedOperationException("The transaction need to have at least one player!");
             return transactionRepository.save(transaction);
@@ -80,16 +82,25 @@ public class TransactionService {
     }
 
     public boolean hasAccessToWallet(User user, int playerID) {
-        Player player = playerRepository.getById(playerID);
+        Player player = playerID == -1 ? null : playerRepository.findById(playerID).orElse(null);
         boolean hasAccess = user.hasAdminPerms(-1);
         if(!hasAccess) {
             for (Player p : user.getPlayers()) {
-                if (p.getCorp() != null && player.getCorp() != null && p.getCorp().equals(player.getCorp())) {
+                if (
+                        p.getCorp() != null && player != null && player.getCorp() != null &&
+                        p.getCorp().equals(player.getCorp())
+                ) {
                     hasAccess = true;
                     break;
                 }
             }
         }
         return hasAccess;
+    }
+
+    public boolean hasAccessToTransaction(User user, int transactionID) {
+        Transaction transaction = transactionRepository.findById(transactionID).orElseThrow(EntityNotFoundException::new);
+        Player player = transaction.getFrom().isNew() ? null : transaction.getFrom();
+        return hasAccessToWallet(user, player == null ? -1 : player.getUid());
     }
 }

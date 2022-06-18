@@ -1,9 +1,9 @@
 package de.blaumeise03.projectmanager.toDo;
 
-import de.blaumeise03.projectmanager.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service

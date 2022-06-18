@@ -22,14 +22,14 @@ public class POJOMapper {
                 //iterate over all fields
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(POJOData.class)) {
+                        //Current field should be mapped onto the target object
+                        String invokeMethod = field.getAnnotation(POJOData.class).invokeMethod();
+                        String fieldName =
+                                field.getName().substring(0, 1).toUpperCase() +
+                                        (field.getName().length() > 1 ? field.getName().substring(1) : "");
+                        String getterName = (field.getType().equals(Boolean.TYPE) ? "is" : "get") + fieldName;
+                        Object value = o.getClass().getMethod(getterName).invoke(o);
                         if (!field.getAnnotation(POJOData.class).blocked()) {
-                            //Current field should be mapped onto the target object
-                            String invokeMethod = field.getAnnotation(POJOData.class).invokeMethod();
-                            String fieldName =
-                                    field.getName().substring(0, 1).toUpperCase() +
-                                            (field.getName().length() > 1 ? field.getName().substring(1) : "");
-                            String getterName = (field.getType().equals(Boolean.TYPE) ? "is" : "get") + fieldName;
-                            Object value = o.getClass().getMethod(getterName).invoke(o);
                             if(invokeMethod.equals("NONE"))
                                 //Default mode for direct mapping
                                 resClass.getMethod("set" + fieldName, field.getType()).invoke(res, value);
@@ -44,22 +44,22 @@ public class POJOMapper {
                                 } else {
                                     //Object is null, if the target field is a number, -1 will be used
                                     Class<?> r = field.getType().getMethod(invokeMethod).getReturnType();
-                                    if(r.equals(Integer.TYPE) || r.equals(Long.TYPE)) {
+                                    if(r.equals(Integer.TYPE) || r.equals(Long.TYPE) || r.equals(Integer.class) || r.equals(Long.class)) {
                                         resClass.getMethod(
                                                 "set" + fieldName,
-                                                field.getType().getMethod(invokeMethod).getReturnType()
+                                               Long.TYPE
                                         ).invoke(res, -1);
                                     } else throw new POJOMappingException(String.format("Can't map field %s of class %s because it's null", field.getName(), o.getClass()));
                                 }
                             }
-                            if(field.isAnnotationPresent(POJOExtraMapping.class) && value != null) {
-                                String nullCheck = field.getAnnotation(POJOExtraMapping.class).nullCheckMethod();
-                                boolean isNull = nullCheck.equals("NONE") || (boolean) value.getClass().getMethod(nullCheck).invoke(value);
-                                if(!isNull) {
-                                    POJOExtraMapping m = field.getAnnotation(POJOExtraMapping.class);
-                                    resClass.getMethod(m.invokeMethodTo(), m.type())
-                                            .invoke(res, value.getClass().getMethod(m.invokeMethodFrom()).invoke(value));
-                                }
+                        }
+                        if(field.isAnnotationPresent(POJOExtraMapping.class) && value != null) {
+                            String nullCheck = field.getAnnotation(POJOExtraMapping.class).nullCheckMethod();
+                            boolean isNull = !nullCheck.equals("NONE") && (boolean) value.getClass().getMethod(nullCheck).invoke(value);
+                            if(!isNull) {
+                                POJOExtraMapping m = field.getAnnotation(POJOExtraMapping.class);
+                                resClass.getMethod(m.invokeMethodTo(), m.type())
+                                        .invoke(res, value.getClass().getMethod(m.invokeMethodFrom()).invoke(value));
                             }
                         }
                     }

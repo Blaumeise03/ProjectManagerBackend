@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @POJO(mappingClass = TransactionPOJO.class)
 @Table(name="db_transactions")
-public class Transaction {
+public class Transaction extends BaseEntity{
     @Id
     @POJOData
     @GeneratedValue(strategy=GenerationType.IDENTITY)

@@ -9,7 +9,7 @@ public class Corp {
     @Column(name="CID")
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int cid;
+    private Integer cid;
 
     @Column(name = "Tag", length = 10)
     private String tag;
@@ -20,11 +20,24 @@ public class Corp {
     @OneToMany(mappedBy = "corp")
     private Set<Player> players;
 
-    public int getCid() {
+    @Transient
+    private boolean isNew = true;
+
+    @PrePersist
+    @PostLoad
+    void markNotNew() {
+        this.isNew = false;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public Integer getCid() {
         return cid;
     }
 
-    public void setCid(int cid) {
+    public void setCid(Integer cid) {
         this.cid = cid;
     }
 

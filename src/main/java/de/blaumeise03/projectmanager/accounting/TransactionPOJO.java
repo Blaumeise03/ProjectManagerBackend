@@ -62,8 +62,12 @@ public class TransactionPOJO {
         this.fromID = fromID;
     }
 
-    public void setFrom(int from) {
+    public void setFrom(Integer from) {
         this.setFromID(from);
+    }
+
+    public void setFrom(long from) {
+        this.setFromID((int) from);
     }
 
     public int getToID() {
@@ -74,8 +78,12 @@ public class TransactionPOJO {
         return this.getToID();
     }*/
 
-    public void setTo(int to) {
+    public void setTo(Integer to) {
         this.setToID(to);
+    }
+
+    public void setTo(long to) {
+        this.setToID((int) to);
     }
 
     public void setToID(int toID) {

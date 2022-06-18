@@ -5,6 +5,8 @@ import lombok.*;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,7 +20,7 @@ public class ApiError {
     private List<ApiSubError> subErrors;
 
     private ApiError() {
-        timestamp = LocalDateTime.now();
+        timestamp = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     ApiError(HttpStatus status) {
@@ -27,10 +29,10 @@ public class ApiError {
     }
 
     ApiError(HttpStatus status, Throwable ex) {
-        this();
-        this.status = status;
-        this.message = "Unexpected error";
-        this.debugMessage = ex.getLocalizedMessage();
+        this(status, ex.getMessage(), ex);
+        //this.status = status;
+        //this.message = "Unexpected error";
+        //this.debugMessage = ex.getLocalizedMessage();
     }
 
     ApiError(HttpStatus status, String message, Throwable ex) {
@@ -38,6 +40,11 @@ public class ApiError {
         this.status = status;
         this.message = message;
         this.debugMessage = ex.getLocalizedMessage();
+        while (ex.getCause() != null) {
+            if(this.subErrors == null) subErrors = new ArrayList<>();
+            ex = ex.getCause();
+            this.subErrors.add(new CauseError("Caused by: " + ex.getClass().getName(), ex.getLocalizedMessage()));
+        }
     }
 
     abstract class ApiSubError {
@@ -57,5 +64,13 @@ public class ApiError {
             this.object = object;
             this.message = message;
         }
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    @AllArgsConstructor
+    class CauseError extends ApiSubError {
+        private String message;
+        private String debugMessage;
     }
 }

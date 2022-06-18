@@ -22,9 +22,9 @@ public class TransactionController {
     private UserService userService;
 
     @GetMapping("/{id}")
-    public TransactionPOJO getTransaction(Authentication authentication, @PathVariable String id) {
+    public TransactionPOJO getTransaction(Authentication authentication, @PathVariable String id) throws MissingPermissionsException {
         //System.out.println("Test " + id);
-        return TransactionPOJO.convert(transactionService.findById(Integer.parseInt(id)));
+        return TransactionPOJO.convert(transactionService.findById(AuthenticationUtils.getUser(authentication, userService), Integer.parseInt(id)));
     }
 
     @SuppressWarnings("unchecked")
@@ -39,7 +39,7 @@ public class TransactionController {
         return ResponseEntity.ok().body(res);
     }
 
-    @PostMapping("/new")
+    @PostMapping("")
     public ResponseEntity<String> putTransaction(Authentication authentication, @RequestBody TransactionPOJO transactionPOJO) throws MissingPermissionsException, POJOMappingException {
         //System.out.println(transactionPOJO);
 

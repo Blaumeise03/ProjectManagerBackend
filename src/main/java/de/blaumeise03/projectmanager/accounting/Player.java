@@ -1,8 +1,13 @@
 package de.blaumeise03.projectmanager.accounting;
 
 import de.blaumeise03.projectmanager.userManagement.User;
+import de.blaumeise03.projectmanager.userManagement.UserService;
+import de.blaumeise03.projectmanager.utils.POJO;
+import de.blaumeise03.projectmanager.utils.POJOData;
+import de.blaumeise03.projectmanager.utils.POJOExtraMapping;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -11,18 +16,33 @@ import java.util.Set;
 @Table(name="db_players")
 @Getter
 @Setter
-public class Player {
+@POJO(mappingClass = PlayerPOJO.class)
+@Inheritance
+public class Player{
+    @Autowired
+    @Transient
+    CorpRepository corpRepository;
+
+    @Autowired
+    @Transient
+    UserService userService;
+
     @Column(name="UID")
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int uid;
+    @POJOData
+    private Integer uid;
 
     @Column(name = "Name", length = 32)
+    @POJOData
     private String name;
 
     @Column(name = "IngameID", length = 32)
+    @POJOData
     private String ingameID;
 
+    @POJOData(blocked = true)
+    @POJOExtraMapping(invokeMethodFrom = "getCid", invokeMethodTo = "setCorpID", type = Integer.class)
     @ManyToOne
     @JoinColumn(name="CID", foreignKey=@ForeignKey(name = "Fk_corp"))
     private Corp corp;
@@ -36,6 +56,7 @@ public class Player {
     @Column(name = "parent")
     private Integer parent = null;
 
+    @POJOData(invokeMethod = "getId")
     @ManyToOne
     @JoinColumn(name="userID", foreignKey=@ForeignKey(name = "Fk_user"))
     private User user;
@@ -51,5 +72,14 @@ public class Player {
 
     public boolean isNew() {
         return isNew;
+    }
+
+
+    public void loadCorp(Integer id) {
+        this.corp = corpRepository.findById(id).orElseThrow(EntityExistsException::new);
+    }
+
+    public void loadUser(Long id) {
+        this.user = userService.getUserByID(id).orElseThrow(EntityNotFoundException::new);
     }
 }
