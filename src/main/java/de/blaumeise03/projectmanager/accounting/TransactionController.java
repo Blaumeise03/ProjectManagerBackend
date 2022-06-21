@@ -21,9 +21,11 @@ public class TransactionController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PlayerService playerService;
+
     @GetMapping("/{id}")
     public TransactionPOJO getTransaction(Authentication authentication, @PathVariable String id) throws MissingPermissionsException, POJOMappingException {
-        //System.out.println("Test " + id);
         return (TransactionPOJO) POJOMapper.map(transactionService.findById(AuthenticationUtils.getUser(authentication, userService), Integer.parseInt(id)));
     }
 

@@ -1,19 +1,26 @@
 package de.blaumeise03.projectmanager.accounting;
 
+import de.blaumeise03.projectmanager.utils.POJO;
+import de.blaumeise03.projectmanager.utils.POJOData;
+
 import javax.persistence.*;
 import java.util.Set;
 
+@POJO(mappingClass = CorpPOJO.class)
 @Entity
 @Table(name="db_corps")
 public class Corp {
+    @POJOData
     @Column(name="CID")
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer cid;
 
+    @POJOData
     @Column(name = "Tag", length = 10)
     private String tag;
 
+    @POJOData
     @Column(name = "Name", length = 20)
     private String name;
 

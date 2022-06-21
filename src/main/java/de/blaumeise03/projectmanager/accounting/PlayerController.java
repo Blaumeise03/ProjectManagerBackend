@@ -23,18 +23,28 @@ public class PlayerController {
 
     @SuppressWarnings("unchecked")
     @GetMapping("/corpTag/{tag}")
-    public List<PlayerPOJO> getPlayerByCorpTag(Authentication authentication, @PathVariable String tag) throws POJOMappingException {
+    public List<PlayerPOJO> getPlayersByCorpTag(Authentication authentication, @PathVariable String tag) throws POJOMappingException {
         return (List<PlayerPOJO>) POJOMapper.mapAll(playerService.getByCorpTag(tag));
     }
 
     @SuppressWarnings("unchecked")
     @GetMapping("/corp/{id}")
-    public List<PlayerPOJO> getPlayerByCorpID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
+    public List<PlayerPOJO> getPlayersByCorpID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
         return (List<PlayerPOJO>) POJOMapper.mapAll(playerService.getByCorpID(Integer.parseInt(id)));
+    }
+
+    @GetMapping("/corp/{id}/wallet")
+    public List<WalletPOJO> getAllWalletsByCorpID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
+        return playerService.findWalletsByCorpID(Integer.parseInt(id));
     }
 
     @GetMapping("/{id}")
     public PlayerPOJO getPlayerByID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
         return (PlayerPOJO) POJOMapper.map(playerService.findByID(Integer.parseInt(id)));
+    }
+
+    @GetMapping("/{id}/wallet")
+    public WalletPOJO getPlayerWalletByID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
+        return playerService.findWalletByID(Integer.parseInt(id));
     }
 }

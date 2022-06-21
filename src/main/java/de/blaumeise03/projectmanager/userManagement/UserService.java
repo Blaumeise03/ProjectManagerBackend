@@ -1,8 +1,12 @@
 package de.blaumeise03.projectmanager.userManagement;
 
+import de.blaumeise03.projectmanager.accounting.Player;
+import de.blaumeise03.projectmanager.exceptions.MissingPermissionsException;
 import de.blaumeise03.projectmanager.exceptions.UserAlreadyExistException;
+import de.blaumeise03.projectmanager.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -100,6 +104,25 @@ public class UserService implements IUserService {
                         return o.toString();
                     }
                 }).collect(Collectors.toList());
+    }
+
+    public UserSessionInfoPOJO getFromSession(Authentication authentication) throws MissingPermissionsException {
+        User user = AuthenticationUtils.getUser(authentication, this);
+        UserSessionInfoPOJO userSessionInfoPOJO = new UserSessionInfoPOJO();
+        userSessionInfoPOJO.setUid(user.getId());
+        userSessionInfoPOJO.setName(user.getUsername());
+        for(Player p : user.getPlayers()) {
+            if(p.getParent() == null) {
+                userSessionInfoPOJO.setMid(p.getUid());
+                userSessionInfoPOJO.setMainCharName(p.getName());
+                if(p.getCorp() != null && !p.getCorp().isNew()) {
+                    userSessionInfoPOJO.setCid(p.getCorp().getCid());
+                    userSessionInfoPOJO.setCTag(p.getCorp().getTag());
+                }
+                break;
+            }
+        }
+        return userSessionInfoPOJO;
     }
 
     public SessionRegistry getSessionRegistry() {

@@ -15,6 +15,10 @@ public abstract class POJOConverter<F, T> {
         POJOConverter.service = service;
     }
 
+    public static PlayerService getService() {
+        return service;
+    }
+
     public static final POJOConverter<Object, Object> DEFAULT_CONVERTER = new POJOConverter<>() {
         @Override
         public Object convert(Object value) {
@@ -56,6 +60,7 @@ public abstract class POJOConverter<F, T> {
     public static final POJOConverter<Integer, Player> INTEGER_PLAYER_POJO_CONVERTER = new POJOConverter<>() {
         @Override
         public Player convert(Integer value) {
+            if(value == null) return null;
             return service.findByID(value);
         }
     };
