@@ -39,7 +39,9 @@ public class ApiError {
         this();
         this.status = status;
         this.message = message;
-        this.debugMessage = ex.getLocalizedMessage();
+        if(ex.getMessage() == null || ex.getMessage().equals(ex.getLocalizedMessage()))
+            this.debugMessage = ex.getClass().getName() + ": " + ex.getLocalizedMessage();
+        else this.debugMessage = ex.getLocalizedMessage();
         while (ex.getCause() != null) {
             if(this.subErrors == null) subErrors = new ArrayList<>();
             ex = ex.getCause();

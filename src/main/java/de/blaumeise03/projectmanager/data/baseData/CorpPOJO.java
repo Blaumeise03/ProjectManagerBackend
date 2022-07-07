@@ -1,4 +1,4 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.baseData;
 
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;

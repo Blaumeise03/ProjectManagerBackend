@@ -17,13 +17,11 @@ class POJOMapperTest {
         pojoOr.setPassword("password");
         pojoOr.setEmail("email");
         pojoOr.setEnabled(true);
-        pojoOr.setTokenExpired(false);
         pojoOr.setId(1234567890L);
         expected.setUsername("username");
         expected.setPassword("password");
         expected.setEmail("email");
         expected.setEnabled(true);
-        expected.setTokenExpired(false);
         expected.setId(1234567890L);
         User user = (User) POJOMapper.map(pojoOr);
         assertEquals(expected, user);

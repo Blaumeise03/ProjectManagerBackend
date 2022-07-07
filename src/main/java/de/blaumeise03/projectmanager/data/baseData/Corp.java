@@ -1,5 +1,6 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.baseData;
 
+import de.blaumeise03.projectmanager.data.projects.Project;
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
 
@@ -26,6 +27,9 @@ public class Corp {
 
     @OneToMany(mappedBy = "corp")
     private Set<Player> players;
+
+    @OneToMany(mappedBy = "corp")
+    private Set<Project> projects;
 
     @Transient
     private boolean isNew = true;

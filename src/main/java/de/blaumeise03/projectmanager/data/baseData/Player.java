@@ -1,10 +1,10 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.baseData;
 
+import de.blaumeise03.projectmanager.data.accounting.Transaction;
 import de.blaumeise03.projectmanager.userManagement.User;
 import de.blaumeise03.projectmanager.userManagement.UserService;
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
-import de.blaumeise03.projectmanager.utils.POJOExtraMapping;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +27,11 @@ public class Player{
     @Transient
     UserService userService;
 
-    @Column(name="UID")
+    @Column(name="id")
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @POJOData
-    private Integer uid;
+    private Integer id;
 
     @Column(name = "Name", length = 32)
     @POJOData
@@ -43,7 +43,7 @@ public class Player{
 
     @POJOData
     @ManyToOne
-    @JoinColumn(name="CID", foreignKey=@ForeignKey(name = "Fk_corp"))
+    @JoinColumn(name="corpID", foreignKey=@ForeignKey(name = "Fk_corp"))
     private Corp corp;
 
     @OneToMany(mappedBy = "from")
@@ -52,6 +52,7 @@ public class Player{
     @OneToMany(mappedBy = "to")
     private Set<Transaction> to;
 
+    @POJOData
     @Column(name = "parent")
     private Integer parent = null;
 
@@ -59,6 +60,14 @@ public class Player{
     @ManyToOne
     @JoinColumn(name="userID", foreignKey=@ForeignKey(name = "Fk_user"))
     private User user;
+
+    @POJOData
+    @Column(name = "rank")
+    private String rank;
+
+    @POJOData
+    @Column(name = "dummy")
+    private Boolean dummy = false;
 
     @Transient
     private boolean isNew = true;

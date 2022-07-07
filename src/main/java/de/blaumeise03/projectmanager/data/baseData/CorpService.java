@@ -1,4 +1,4 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.baseData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

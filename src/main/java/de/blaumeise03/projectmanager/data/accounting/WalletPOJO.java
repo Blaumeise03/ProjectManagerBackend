@@ -1,4 +1,4 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.accounting;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

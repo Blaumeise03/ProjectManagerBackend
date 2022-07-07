@@ -1,12 +1,8 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.baseData;
 
-import de.blaumeise03.projectmanager.exceptions.MissingPermissionsException;
-import de.blaumeise03.projectmanager.userManagement.User;
+import de.blaumeise03.projectmanager.data.accounting.WalletPOJO;
 import de.blaumeise03.projectmanager.userManagement.UserService;
-import de.blaumeise03.projectmanager.userManagement.UserSessionInfoPOJO;
-import de.blaumeise03.projectmanager.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -53,8 +49,8 @@ public class PlayerService {
         List<Player> players = playerRepository.findByCorp(corp);
         List<WalletPOJO> res = new ArrayList<>();
         for(Player p : players) {
-            Tuple tuple = playerRepository.findWalletByID(p.getUid()).orElseThrow(EntityNotFoundException::new);
-            res.add(new WalletPOJO(p.getUid(), tuple.get("name", String.class), tuple.get("verified", BigDecimal.class), tuple.get("unverified", BigDecimal.class)));
+            Tuple tuple = playerRepository.findWalletByID(p.getId()).orElseThrow(EntityNotFoundException::new);
+            res.add(new WalletPOJO(p.getId(), tuple.get("name", String.class), tuple.get("verified", BigDecimal.class), tuple.get("unverified", BigDecimal.class)));
         }
         return res;
     }

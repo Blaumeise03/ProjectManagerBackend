@@ -1,14 +1,12 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.baseData;
 
-import de.blaumeise03.projectmanager.userManagement.User;
+import de.blaumeise03.projectmanager.data.accounting.Transaction;
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
-import de.blaumeise03.projectmanager.utils.POJOExtraMapping;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -18,7 +16,7 @@ import java.util.Set;
 public class PlayerPOJO {
 
     @POJOData
-    private Integer uid;
+    private Integer id;
 
     @POJOData
     private String name;
@@ -42,6 +40,12 @@ public class PlayerPOJO {
 
     @POJOData
     private Long user;
+
+    @POJOData
+    private String rank;
+
+    @POJOData
+    private Boolean dummy = false;
 
     public void setUser(long user) {
         this.user = user;

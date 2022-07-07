@@ -52,6 +52,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             user.setEmail("test@test.com");
             user.setRoles(Arrays.asList(adminRole));
             user.setEnabled(true);
+            user.setId(0L);
             userRepository.save(user);
         }
 
@@ -64,6 +65,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             user2.setEmail("test@test.com");
             user2.setRoles(Arrays.asList(userRole));
             user2.setEnabled(true);
+            user2.setId(1L);
             userRepository.save(user2);
         }
         alreadySetup = true;

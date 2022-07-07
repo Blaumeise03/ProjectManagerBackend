@@ -1,5 +1,6 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.baseData;
 
+import de.blaumeise03.projectmanager.data.accounting.WalletPOJO;
 import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
 import de.blaumeise03.projectmanager.userManagement.UserService;
 import de.blaumeise03.projectmanager.utils.POJOMapper;

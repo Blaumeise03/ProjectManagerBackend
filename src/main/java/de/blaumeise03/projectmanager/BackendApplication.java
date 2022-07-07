@@ -1,6 +1,7 @@
 package de.blaumeise03.projectmanager;
 
-import de.blaumeise03.projectmanager.accounting.PlayerService;
+import de.blaumeise03.projectmanager.data.baseData.ItemService;
+import de.blaumeise03.projectmanager.data.baseData.PlayerService;
 import de.blaumeise03.projectmanager.utils.POJOConverter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +20,8 @@ public class BackendApplication {
     static ConfigurableApplicationContext ctx = null;
     public static void main(String[] args) {
         ctx = SpringApplication.run(BackendApplication.class, args);
-        POJOConverter.setService(ctx.getBean(PlayerService.class));
+        POJOConverter.setPlayerService(ctx.getBean(PlayerService.class));
+        POJOConverter.setItemService(ctx.getBean(ItemService.class));
     }
 
     @Bean

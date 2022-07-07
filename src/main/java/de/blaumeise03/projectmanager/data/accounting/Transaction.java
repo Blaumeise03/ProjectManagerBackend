@@ -1,5 +1,6 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.accounting;
 
+import de.blaumeise03.projectmanager.data.baseData.Player;
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
 import de.blaumeise03.projectmanager.utils.POJOExtraMapping;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @Table(name="db_transactions")
 @Getter
 @Setter
-public class Transaction extends BaseEntity{
+public class Transaction{
     @Id
     @POJOData
     @GeneratedValue(strategy=GenerationType.IDENTITY)

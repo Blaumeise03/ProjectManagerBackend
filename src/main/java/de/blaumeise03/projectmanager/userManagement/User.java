@@ -1,13 +1,12 @@
 package de.blaumeise03.projectmanager.userManagement;
 
-import de.blaumeise03.projectmanager.accounting.Player;
+import de.blaumeise03.projectmanager.data.baseData.Player;
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -19,18 +18,24 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @POJOData
+    @Column(name = "id")
     private Long id;
 
     @POJOData
+    @Column(name = "username", unique = true)
     private String username;
+
     @POJOData
+    @Column(name = "email")
     private String email;
+
     @POJOData
+    @Column(name = "password")
     private String password;
+
     @POJOData
+    @Column(name = "enabled")
     private Boolean enabled;
-    @POJOData
-    private Boolean tokenExpired;
 
     @ManyToMany
     @JoinTable(
@@ -62,7 +67,7 @@ public class User {
 
     public boolean ownsWallet(int id) {
         for(Player player : players) {
-            if(id == player.getUid()) return true;
+            if(id == player.getId()) return true;
         }
         return false;
     }

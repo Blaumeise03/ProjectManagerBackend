@@ -1,6 +1,6 @@
 package de.blaumeise03.projectmanager.userManagement;
 
-import de.blaumeise03.projectmanager.accounting.Player;
+import de.blaumeise03.projectmanager.data.baseData.Player;
 import de.blaumeise03.projectmanager.exceptions.MissingPermissionsException;
 import de.blaumeise03.projectmanager.exceptions.UserAlreadyExistException;
 import de.blaumeise03.projectmanager.utils.AuthenticationUtils;
@@ -113,7 +113,7 @@ public class UserService implements IUserService {
         userSessionInfoPOJO.setName(user.getUsername());
         for(Player p : user.getPlayers()) {
             if(p.getParent() == null) {
-                userSessionInfoPOJO.setMid(p.getUid());
+                userSessionInfoPOJO.setMid(p.getId());
                 userSessionInfoPOJO.setMainCharName(p.getName());
                 if(p.getCorp() != null && !p.getCorp().isNew()) {
                     userSessionInfoPOJO.setCid(p.getCorp().getCid());

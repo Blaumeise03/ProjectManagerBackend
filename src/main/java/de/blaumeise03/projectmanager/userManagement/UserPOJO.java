@@ -19,8 +19,6 @@ public class UserPOJO {
     private String password;
     @POJOData
     private Boolean enabled;
-    @POJOData
-    private Boolean tokenExpired;
 
     public boolean isEnabled() {
         return enabled;

@@ -1,5 +1,7 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.accounting;
 
+import de.blaumeise03.projectmanager.data.baseData.Player;
+import de.blaumeise03.projectmanager.data.baseData.PlayerRepository;
 import de.blaumeise03.projectmanager.exceptions.MissingPermissionsException;
 import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
 import de.blaumeise03.projectmanager.userManagement.User;
@@ -33,7 +35,8 @@ public class TransactionService {
     public long getSumByPlayer(User user, int playerID) throws MissingPermissionsException {
         Player player = playerRepository.getReferenceById(playerID);
         if(hasAccessToWallet(user, playerID)) {
-            return transactionRepository.getWalletSumOfPlayer(playerID);
+            Long res = transactionRepository.getWalletSumOfPlayer(playerID);
+            return res == null ? 0 : res;
         } else {
             throw new MissingPermissionsException(String.format("The user %d (%s) does not has read-access to wallet of player %d (%s)", user.getId(), user.getUsername(), playerID, player.getName()));
         }
@@ -51,11 +54,11 @@ public class TransactionService {
     public Transaction save(User user, TransactionPOJO transactionPOJO) throws MissingPermissionsException, POJOMappingException {
         //Player walletOwner = transactionPOJO.fromID != -1 ? playerRepository.getById(transactionPOJO.fromID) : null;
         boolean isAdmin = user.hasAdminPerms(-1);
-        if(transactionPOJO.from == null && transactionPOJO.nameFrom != null) {
-            transactionPOJO.from = playerRepository.findByName(transactionPOJO.nameFrom).orElseThrow(EntityNotFoundException::new).getUid();
+        if(transactionPOJO.from == null && transactionPOJO.nameFrom != null && !transactionPOJO.nameFrom.isBlank()) {
+            transactionPOJO.from = playerRepository.findByName(transactionPOJO.nameFrom).orElseThrow(EntityNotFoundException::new).getId();
         }
-        if(transactionPOJO.to == null && transactionPOJO.nameTo != null) {
-            transactionPOJO.to = playerRepository.findByName(transactionPOJO.nameTo).orElseThrow(EntityNotFoundException::new).getUid();
+        if(transactionPOJO.to == null && transactionPOJO.nameTo != null && !transactionPOJO.nameTo.isBlank()) {
+            transactionPOJO.to = playerRepository.findByName(transactionPOJO.nameTo).orElseThrow(EntityNotFoundException::new).getId();
         }
         if(transactionPOJO.from != null && user.ownsWallet(transactionPOJO.from) || isAdmin) {
             if(transactionPOJO.isVerified() && !isAdmin)
@@ -109,8 +112,8 @@ public class TransactionService {
     public boolean hasAccessToTransaction(User user, int transactionID) {
         Transaction transaction = transactionRepository.findById(transactionID).orElseThrow(EntityNotFoundException::new);
         Player player = (transaction.getFrom() == null || transaction.getFrom().isNew()) ? null : transaction.getFrom();
-        if (hasAccessToWallet(user, player == null ? -1 : player.getUid())) return true;
+        if (hasAccessToWallet(user, player == null ? -1 : player.getId())) return true;
         player = (transaction.getTo() == null || transaction.getTo().isNew()) ? null : transaction.getTo();
-        return hasAccessToWallet(user, player == null ? -1 : player.getUid());
+        return hasAccessToWallet(user, player == null ? -1 : player.getId());
     }
 }

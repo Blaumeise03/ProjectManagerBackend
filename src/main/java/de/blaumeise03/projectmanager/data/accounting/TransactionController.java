@@ -1,5 +1,6 @@
-package de.blaumeise03.projectmanager.accounting;
+package de.blaumeise03.projectmanager.data.accounting;
 
+import de.blaumeise03.projectmanager.data.baseData.PlayerService;
 import de.blaumeise03.projectmanager.exceptions.MissingPermissionsException;
 import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
 import de.blaumeise03.projectmanager.userManagement.UserService;
