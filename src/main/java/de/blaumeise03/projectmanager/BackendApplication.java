@@ -16,8 +16,14 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 @EnableJpaRepositories
 @SpringBootApplication
 public class BackendApplication {
-//DROP TABLE IF EXISTS corps, items, prices, users, transactions;
     static ConfigurableApplicationContext ctx = null;
+
+
+    /**
+     * Main method to start the server.
+     *
+     * @param args ignored.
+     */
     public static void main(String[] args) {
         ctx = SpringApplication.run(BackendApplication.class, args);
         POJOConverter.setPlayerService(ctx.getBean(PlayerService.class));

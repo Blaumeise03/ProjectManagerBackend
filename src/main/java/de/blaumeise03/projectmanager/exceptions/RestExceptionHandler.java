@@ -1,5 +1,6 @@
 package de.blaumeise03.projectmanager.exceptions;
 
+import org.hibernate.PropertyValueException;
 import org.hibernate.TransientPropertyValueException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -9,10 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.sql.SQLSyntaxErrorException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -29,55 +34,54 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
-        apiError.setMessage(ex.getMessage());
-        ex.printStackTrace();
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(MissingPermissionsException.class)
-    protected ResponseEntity<Object> handleMissingPermsEx(MissingPermissionsException ex) {
-        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN);
-        apiError.setMessage(ex.getMessage());
-        ex.printStackTrace();
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(POJOMappingException.class)
-    protected ResponseEntity<Object> handlePOJOMappingException(POJOMappingException ex) {
+    @ExceptionHandler({
+            EntityNotFoundException.class,
+            PropertyValueException.class,
+            MissingPermissionsException.class,
+            POJOMappingException.class,
+            NullPointerException.class,
+            TransientPropertyValueException.class,
+            SQLSyntaxErrorException.class,
+            NumberFormatException.class,
+            IllegalArgumentException.class
+    })
+    protected ResponseEntity<Object> handleDefaultException(Exception ex, WebRequest request) {
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex);
-        apiError.setMessage("An internal error occurred while trying to process the request. Please inform an administrator.");
-        ex.printStackTrace();
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(NullPointerException.class)
-    protected ResponseEntity<Object> handleNullPointerException(NullPointerException ex) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex);
-        ex.printStackTrace();
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(TransientPropertyValueException.class)
-    protected ResponseEntity<Object> handleTransientPropertyValueException(TransientPropertyValueException ex) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex);
-        ex.printStackTrace();
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(SQLSyntaxErrorException.class)
-    protected ResponseEntity<Object> handleSQLSyntaxException(SQLSyntaxErrorException ex) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex);
-        ex.printStackTrace();
-        return buildResponseEntity(apiError);
-    }
-
-    @ExceptionHandler(NumberFormatException.class)
-    protected ResponseEntity<Object> handleNumberFormatException(NumberFormatException ex) {
-        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex);
-        //apiError.setMessage(ex.getMessage());
+        if (request instanceof ServletWebRequest) {
+            ServletWebRequest webRequest = (ServletWebRequest) request;
+            apiError.setPath(webRequest.getHttpMethod() + ": " + webRequest.getRequest().getRequestURL().toString());
+        } else {
+            apiError.setPath(request.getDescription(false));
+        }
+        Principal user = request.getUserPrincipal();
+        if(user != null)
+            apiError.setUser(user.getName());
+        else apiError.setUser("N/A");
+        String session = request.getSessionId();
+        int i = Math.max(session.length() - 8, 0);
+        apiError.setSession(session.substring(0, i) + "********");
+        if (ex instanceof EntityNotFoundException) {
+            apiError.setStatus(HttpStatus.NOT_FOUND);
+            apiError.setMessage("Requested resource was not found");
+        } else if (ex instanceof PropertyValueException) {
+            apiError.setStatus(HttpStatus.BAD_REQUEST);
+            apiError.setMessage("Request content is malformed");
+        } else if (ex instanceof NumberFormatException) {
+            apiError.setStatus(HttpStatus.BAD_REQUEST);
+        } else if (ex instanceof IllegalArgumentException)  {
+            apiError.setStatus(HttpStatus.BAD_REQUEST);
+        } else if (ex instanceof MissingPermissionsException) {
+            apiError.setStatus(HttpStatus.FORBIDDEN);
+        } else if (ex instanceof POJOMappingException) {
+            apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            apiError.setMessage(
+                    "An internal error occurred while trying to process the request. Please inform an administrator."
+            );
+        } else if (ex instanceof NullPointerException) {
+            apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else if (ex instanceof SQLSyntaxErrorException) {
+            apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         ex.printStackTrace();
         return buildResponseEntity(apiError);
     }

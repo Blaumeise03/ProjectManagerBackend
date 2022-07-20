@@ -70,28 +70,43 @@ public class ItemService {
         return itemRepository.findAllItemNames();
     }
 
-    public Item softSave(ItemPOJO itemPOJO) throws POJOMappingException {
+    public Item save(ItemPOJO itemPOJO) throws POJOMappingException {
         if(itemPOJO.getItemID() != null) {
             Optional<Item> optionalItem = itemRepository.findById(itemPOJO.getItemID());
             if (optionalItem.isPresent()) {
                 Item item = optionalItem.get();
                 item.setItemName(itemPOJO.getItemName());
                 item.setItemType(Item.ItemType.valueOf(itemPOJO.getItemType()));
-                if (itemPOJO.getBlueprint() != null) {
-                    if (itemPOJO.getBlueprint().getItem() == null)
-                        itemPOJO.getBlueprint().setItem(itemPOJO.getItemID());
-                    if(item.getBlueprint() != null) {
-
-                    }
-                    Blueprint bp = (Blueprint) POJOMapper.map(itemPOJO.getBlueprint());
-                    //bp.setId(itemPOJO.getItemID());
-                    bp.getBaseCost().forEach(b -> b.setBlueprint(bp));
-                    item.setBlueprint(bp);
+                if(itemPOJO.getBlueprint() == null && item.getBlueprint() != null) {
+                    blueprintRepository.delete(item.getBlueprint());
+                    item.setBlueprint(null);
+                } else {
+                    saveBlueprint(item, itemPOJO.getBlueprint());
                 }
+                //bp.setId(itemPOJO.getItemID());
                 return itemRepository.save(item);
             }
         }
         Item newItem = (Item) POJOMapper.map(itemPOJO);
         return itemRepository.save(newItem);
+    }
+
+    public Blueprint saveBlueprint(Item item, BlueprintPOJO blueprintPOJO) throws POJOMappingException {
+        if (blueprintPOJO != null) {
+            if (blueprintPOJO.getItem() == null)
+                blueprintPOJO.setItem(item.getItemID());
+            if (item.getBlueprint() != null) {
+                List<Long> exclude = new ArrayList<>(item.getBlueprint().getBaseCost().size());
+                for(ItemCostPOJO itemCost : blueprintPOJO.getBaseCost()) exclude.add(itemCost.getItem());
+                blueprintRepository.deleteItemCost(item.getItemID(), exclude);
+                POJOMapper.map(blueprintPOJO, item.getBlueprint());
+            } else {
+                Blueprint bp = (Blueprint) POJOMapper.map(blueprintPOJO);
+
+                item.setBlueprint(bp);
+            }
+            item.getBlueprint().getBaseCost().forEach(b -> b.setBlueprint(item.getBlueprint()));
+        }
+        return item.getBlueprint();
     }
 }

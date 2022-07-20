@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -28,6 +29,11 @@ public class TransactionController {
     @GetMapping("/{id}")
     public TransactionPOJO getTransaction(Authentication authentication, @PathVariable String id) throws MissingPermissionsException, POJOMappingException {
         return (TransactionPOJO) POJOMapper.map(transactionService.findById(AuthenticationUtils.getUser(authentication, userService), Integer.parseInt(id)));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTransaction(Authentication authentication, @PathVariable String id) throws EntityNotFoundException, MissingPermissionsException {
+        transactionService.delete(AuthenticationUtils.getUser(authentication, userService), Integer.parseInt(id));
     }
 
     @SuppressWarnings("unchecked")

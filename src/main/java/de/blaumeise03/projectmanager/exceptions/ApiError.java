@@ -17,6 +17,9 @@ public class ApiError {
     private LocalDateTime timestamp;
     private String message;
     private String debugMessage;
+    private String path = null;
+    private String user = null;
+    private String session = null;
     private List<ApiSubError> subErrors;
 
     private ApiError() {
@@ -30,9 +33,6 @@ public class ApiError {
 
     ApiError(HttpStatus status, Throwable ex) {
         this(status, ex.getMessage(), ex);
-        //this.status = status;
-        //this.message = "Unexpected error";
-        //this.debugMessage = ex.getLocalizedMessage();
     }
 
     ApiError(HttpStatus status, String message, Throwable ex) {

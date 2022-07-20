@@ -19,7 +19,6 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         //SavedRequest savedRequest = requestCache.getRequest(request, response);
-
     }
 
     public void setRequestCache(RequestCache requestCache) {

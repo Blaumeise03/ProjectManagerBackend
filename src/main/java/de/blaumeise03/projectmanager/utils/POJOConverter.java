@@ -4,6 +4,13 @@ import de.blaumeise03.projectmanager.data.baseData.*;
 import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
 import de.blaumeise03.projectmanager.userManagement.User;
 
+/**
+ * Converts an object {@link F} into {@link T} under the ussage of {@link #convert(Object)}.
+ * @see #convert(Object) for more details.
+ *
+ * @param <F> The source object.
+ * @param <T> The result object.
+ */
 public abstract class POJOConverter<F, T> {
     static PlayerService playerService;
 
@@ -161,8 +168,17 @@ public abstract class POJOConverter<F, T> {
         }
     };
 
+    /**
+     * Converts a given object into an object of type {@link T}.
+     *
+     * @param f The source object
+     * @return the resulting object.
+     */
     public abstract T convert(F f);
 
+    /**
+     * Helper enum to save and find all available converters.
+     */
     public enum DefaultConverter {
         INTEGER(Integer.class, Integer.class, INTEGER_INTEGER_POJO_CONVERTER),
         LONG(Long.class, Long.class, LONG_LONG_POJO_CONVERTER),

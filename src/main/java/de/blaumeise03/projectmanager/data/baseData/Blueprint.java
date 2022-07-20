@@ -33,7 +33,7 @@ public class Blueprint implements Serializable {
     @POJOData
     private Long stationFees;
 
-    @OneToMany(mappedBy = "blueprint")
+    @OneToMany(mappedBy = "blueprint", cascade = {CascadeType.ALL})
     @POJOData
     private Set<ItemCost> baseCost;
 

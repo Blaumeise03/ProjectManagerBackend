@@ -30,6 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private LogoutSuccessHandler logoutSuccessHandler;
 
+    /**
+     * Configures the security settings for the server.
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -50,16 +53,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().ignoringAntMatchers("/api/login", "/api/logout").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }
 
-    /*//@Bean
-    public UserDetailsService userDetailsService() {
-       *//* String username = "user";
-        String password = "password";
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        String encodedPassword = passwordEncoder().encode(password);
-        manager.createUser(User.withUsername(username).password(encodedPassword).roles("USER").build());*//*
-        return new AdvancedUserDetailService();
-    }*/
-
+    /**
+     * Gets the role hierarchy for this application.
+     *
+     * ROLE_ADMIN > ROLE_STAFF > ROLE_USER
+     *
+     * @return The {@link RoleHierarchy}.
+     */
     @Bean
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();

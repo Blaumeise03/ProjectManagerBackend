@@ -73,11 +73,19 @@ public class TransactionService {
             transaction.setFrom(transactionPOJO.getFrom() != null && transactionPOJO.getFrom() != -1 ? playerRepository.findById(transactionPOJO.getFrom()).orElseThrow(EntityNotFoundException::new) : null);
             transaction.setTo(transactionPOJO.getTo() != null && transactionPOJO.getTo() != -1 ? playerRepository.findById(transactionPOJO.getTo()).orElseThrow(EntityNotFoundException::new) : null);
             if(transaction.getFrom() == null && transaction.getTo() == null)
-                throw new UnsupportedOperationException("The transaction need to have at least one player!");
+                throw new IllegalArgumentException("The transaction need to have at least one player!");
             return transactionRepository.save(transaction);
         } else {
             throw new MissingPermissionsException(String.format("The user %d (%s) does not has access to wallet %d", user.getId(), user.getUsername(), transactionPOJO.getFrom()));
         }
+    }
+
+    public void delete(User user, int id) throws EntityNotFoundException, MissingPermissionsException {
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        boolean isAdmin = user.hasAdminPerms(-1);
+        if(transaction.isVerified() && !isAdmin) throw new MissingPermissionsException("Only administrators may delete verified transactions!");
+        if(!isAdmin && !user.ownsWallet(transaction.getFrom().getId())) throw new MissingPermissionsException("You can only delete your own transactions!");
+        transactionRepository.deleteById(id);
     }
 
     public Transaction save(Transaction transaction){

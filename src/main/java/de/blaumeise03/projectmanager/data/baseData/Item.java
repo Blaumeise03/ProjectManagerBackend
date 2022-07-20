@@ -30,10 +30,10 @@ public class Item implements Serializable {
     @POJOData
     private ItemType itemType;
 
-    @OneToMany(mappedBy = "item", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "item", orphanRemoval = true, cascade = {CascadeType.ALL})
     private Set<Price> prices;
 
-    @OneToOne(mappedBy = "item", cascade = {CascadeType.ALL})
+    @OneToOne(mappedBy = "item", orphanRemoval = true, cascade = {CascadeType.ALL})
     private Blueprint blueprint;
 
     @Transient

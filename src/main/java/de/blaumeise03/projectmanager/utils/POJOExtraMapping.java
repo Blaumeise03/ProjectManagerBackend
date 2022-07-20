@@ -5,17 +5,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Requests an additional mapping of this field. {@link #to()} has to be set to the name of the targeted field.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface POJOExtraMapping {
-    @Deprecated
-    String invokeMethodFrom() default "";
-    @Deprecated
-    String invokeMethodTo() default "";
-    @Deprecated
-    String nullCheckMethod() default "NONE";
-    @Deprecated
-    Class<?> type() default Object.class;
-
+    /**
+     * Defines the field of the corresponding class this field should be mapped to.
+     *
+     * @return the name of the targeted field.
+     */
     String to();
 }

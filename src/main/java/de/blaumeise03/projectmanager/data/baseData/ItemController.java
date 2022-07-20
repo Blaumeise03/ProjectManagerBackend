@@ -3,7 +3,6 @@ package de.blaumeise03.projectmanager.data.baseData;
 import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
 import de.blaumeise03.projectmanager.utils.POJOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +51,7 @@ public class ItemController {
 
     @PostMapping
     public ItemPOJO saveItem(@RequestBody ItemPOJO itemPOJO) throws POJOMappingException {
-        Item item = itemService.softSave(itemPOJO);
+        Item item = itemService.save(itemPOJO);
         ItemPOJO res = (ItemPOJO) POJOMapper.map(item);
         if(item.getBlueprint() != null) res.setBlueprint((BlueprintPOJO) POJOMapper.map(item.getBlueprint()));
         return res;
