@@ -74,7 +74,7 @@ public class User {
 
     public boolean hasAdminPerms(int corpID) {
         for(Role role : roles) {
-            System.out.println(role.getName());
+            //System.out.println(role.getName());
             if(role.getName().equals("ROLE_ADMIN") || role.getName().equals("ROLE_CORP_ADMIN")) return true;
         }
         return false;

@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.web.authentication.rememberme.CookieTheftException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -43,7 +44,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             TransientPropertyValueException.class,
             SQLSyntaxErrorException.class,
             NumberFormatException.class,
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            CookieTheftException.class
     })
     protected ResponseEntity<Object> handleDefaultException(Exception ex, WebRequest request) {
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex);
@@ -81,6 +83,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         } else if (ex instanceof SQLSyntaxErrorException) {
             apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        } else if (ex instanceof CookieTheftException) {
+            apiError.setStatus(HttpStatus.UNAUTHORIZED);
         }
         ex.printStackTrace();
         return buildResponseEntity(apiError);
