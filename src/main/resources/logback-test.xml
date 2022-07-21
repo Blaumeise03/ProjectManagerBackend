@@ -20,7 +20,7 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <FileNamePattern>${fileTimestamp}.append%i.log</FileNamePattern>
+            <FileNamePattern>logs/${fileTimestamp}.append%i.log</FileNamePattern>
             <MinIndex>1</MinIndex>
             <MaxIndex>10</MaxIndex>
         </rollingPolicy>
