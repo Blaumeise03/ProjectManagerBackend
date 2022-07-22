@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +22,6 @@ public class BlueprintPOJO {
     @POJOData
     private Long stationFees;
 
-    @POJOData
+    @POJOData(blocked = true) //Entities may not be mapped directly to prevent duplicates
     private Collection<ItemCostPOJO> baseCost;
 }

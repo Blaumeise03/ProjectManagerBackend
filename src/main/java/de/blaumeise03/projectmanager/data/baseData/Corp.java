@@ -3,11 +3,13 @@ package de.blaumeise03.projectmanager.data.baseData;
 import de.blaumeise03.projectmanager.data.projects.Project;
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @POJO(mappingClass = CorpPOJO.class)
+@Data
 @Entity
 @Table(name="db_corps")
 public class Corp {

@@ -29,6 +29,11 @@ public class ItemController {
         return (ItemPOJO) POJOMapper.map(itemService.findItemByID(Long.valueOf(id)));
     }
 
+    @DeleteMapping("/{id}")
+    public boolean deleteItemByID(Authentication authentication, @PathVariable String id) {
+        return itemService.delete(Long.parseLong(id));
+    }
+
     @GetMapping("/{id}/full")
     public ItemPOJO getFullItemByID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
         return itemService.findFullItemByID(Long.valueOf(id));
@@ -51,9 +56,6 @@ public class ItemController {
 
     @PostMapping
     public ItemPOJO saveItem(@RequestBody ItemPOJO itemPOJO) throws POJOMappingException {
-        Item item = itemService.save(itemPOJO);
-        ItemPOJO res = (ItemPOJO) POJOMapper.map(item);
-        if(item.getBlueprint() != null) res.setBlueprint((BlueprintPOJO) POJOMapper.map(item.getBlueprint()));
-        return res;
+        return  itemService.save(itemPOJO);
     }
 }
