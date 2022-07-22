@@ -44,35 +44,16 @@ public class Corp {
         return isNew;
     }
 
-    public Integer getCid() {
-        return cid;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Corp corp = (Corp) o;
+        return cid.equals(corp.cid);
     }
 
-    public void setCid(Integer cid) {
-        this.cid = cid;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<Player> getUsers() {
-        return players;
-    }
-
-    public void setUsers(Set<Player> players) {
-        this.players = players;
+    @Override
+    public int hashCode() {
+        return cid.hashCode();
     }
 }

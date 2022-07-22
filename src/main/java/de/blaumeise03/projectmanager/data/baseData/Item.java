@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -59,7 +58,7 @@ public class Item implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(itemID);
+        return itemID.hashCode();
     }
 
     @SuppressWarnings("unused")
@@ -89,8 +88,6 @@ public class Item implements Serializable {
         FIGHTER_BLUEPRINTS,
         NANOCORES,
         SHIP_SKINS,
-        OTHER_ITEMS;
-
-
+        OTHER_ITEMS
     }
 }

@@ -47,7 +47,7 @@ public class Blueprint implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id.hashCode();
     }
 
 

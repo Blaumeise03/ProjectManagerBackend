@@ -90,4 +90,17 @@ public class Player{
     public void loadUser(Long id) {
         this.user = userService.getUserByID(id).orElseThrow(EntityNotFoundException::new);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return id.equals(player.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

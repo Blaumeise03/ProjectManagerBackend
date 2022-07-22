@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -51,15 +52,28 @@ public class Price {
         MARKET_LOWEST_SELL, MARKET_SELL, MARKET_BUY, VCB_SELL, VCB_BUY;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Price price = (Price) o;
+        return item.equals(price.item) && priceType == price.priceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(item, priceType);
+    }
+
     @Data
     @NoArgsConstructor
     public static class PriceID implements Serializable {
 
-        private Item item;
+        private Long item;
 
         private Price.PriceType priceType;
 
-        public PriceID(Item item, Price.PriceType priceType) {
+        public PriceID(Long item, Price.PriceType priceType) {
             this.item = item;
             this.priceType = priceType;
         }
