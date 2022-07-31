@@ -11,7 +11,7 @@ public class ItemCostPOJO {
     @POJOData
     private Long item;
 
-    private String itemName;
+    private String itemName = null;
 
     @POJOData
     private Long quantity;

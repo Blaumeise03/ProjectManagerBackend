@@ -17,4 +17,6 @@ public @interface POJOExtraMapping {
      * @return the name of the targeted field.
      */
     String to();
+
+    boolean recursive() default false;
 }

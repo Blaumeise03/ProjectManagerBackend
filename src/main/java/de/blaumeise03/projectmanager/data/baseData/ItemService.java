@@ -107,7 +107,7 @@ public class ItemService {
         return res;
     }
 
-    void mapFullItem(ItemPOJO res, Item item) throws POJOMappingException {
+    public static void mapFullItem(ItemPOJO res, Item item) throws POJOMappingException {
         if(item.getBlueprint() != null)
             res.setBlueprint((BlueprintPOJO) POJOMapper.map(item.getBlueprint()));
         if(item.getPrices() != null)

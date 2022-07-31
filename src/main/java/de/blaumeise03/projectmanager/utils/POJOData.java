@@ -28,4 +28,6 @@ public @interface POJOData {
      * @return the name of the target field or "" if the name should be the same.
      */
     String to() default "";
+
+    boolean recursive() default false;
 }

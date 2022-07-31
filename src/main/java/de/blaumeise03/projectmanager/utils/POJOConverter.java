@@ -1,7 +1,8 @@
 package de.blaumeise03.projectmanager.utils;
 
 import de.blaumeise03.projectmanager.data.baseData.*;
-import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
+import de.blaumeise03.projectmanager.data.projects.Project;
+import de.blaumeise03.projectmanager.data.projects.ProjectContent;
 import de.blaumeise03.projectmanager.userManagement.User;
 
 /**
@@ -168,6 +169,22 @@ public abstract class POJOConverter<F, T> {
         }
     };
 
+    public static final POJOConverter<Project, Long> PROJECT_LONG_POJO_CONVERTER = new POJOConverter<Project, Long>() {
+        @Override
+        public Long convert(Project project) {
+            if (project == null) return null;
+            return project.getId();
+        }
+    };
+
+    public static final POJOConverter<ProjectContent, Long> PROJECT_CONTENT_LONG_POJO_CONVERTER = new POJOConverter<ProjectContent, Long>() {
+        @Override
+        public Long convert(ProjectContent projectContent) {
+            if (projectContent == null) return null;
+            return projectContent.getId();
+        }
+    };
+
     /**
      * Converts a given object into an object of type {@link T}.
      *
@@ -194,7 +211,9 @@ public abstract class POJOConverter<F, T> {
         ITEM_TYPE_STRING(Item.ItemType.class, String.class, ITEM_TYPE_STRING_POJO_CONVERTER),
         STRING_ITEM_TYPE(String.class, Item.ItemType.class, STRING_ITEM_TYPE_POJO_CONVERTER),
         PRICE_TYPE_STRING(Price.PriceType.class, String.class, PRICE_TYPE_STRING_POJO_CONVERTER),
-        STRING_PRICE_TYPE(String.class, Price.PriceType.class, STRING_PRICE_TYPE_POJO_CONVERTER);
+        STRING_PRICE_TYPE(String.class, Price.PriceType.class, STRING_PRICE_TYPE_POJO_CONVERTER),
+        PROJECT_LONG(Project.class, Long.class, PROJECT_LONG_POJO_CONVERTER),
+        PROJECT_CONTENT_LONG(ProjectContent.class, Long.class, PROJECT_CONTENT_LONG_POJO_CONVERTER);
 
         POJOConverter<?, ?> converter;
         Class<?> from;
