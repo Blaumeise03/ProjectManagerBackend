@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
+import java.util.function.Predicate;
+
 
 @EntityScan
 @EnableJpaRepositories
@@ -36,6 +38,8 @@ public class BackendApplication {
         loggingFilter.setIncludeClientInfo(true);
         loggingFilter.setIncludeQueryString(true);
         loggingFilter.setIncludePayload(true);
+        loggingFilter.setIncludeHeaders(true);
+        loggingFilter.setHeaderPredicate(Predicate.isEqual("cookie"));
         loggingFilter.setMaxPayloadLength(64000);
         return loggingFilter;
     }
