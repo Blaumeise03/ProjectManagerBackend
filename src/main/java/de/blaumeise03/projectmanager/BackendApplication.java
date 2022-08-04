@@ -1,5 +1,6 @@
 package de.blaumeise03.projectmanager;
 
+import de.blaumeise03.projectmanager.data.baseData.CorpService;
 import de.blaumeise03.projectmanager.data.baseData.ItemService;
 import de.blaumeise03.projectmanager.data.baseData.PlayerService;
 import de.blaumeise03.projectmanager.utils.POJOConverter;
@@ -30,6 +31,7 @@ public class BackendApplication {
         ctx = SpringApplication.run(BackendApplication.class, args);
         POJOConverter.setPlayerService(ctx.getBean(PlayerService.class));
         POJOConverter.setItemService(ctx.getBean(ItemService.class));
+        POJOConverter.setCorpService(ctx.getBean(CorpService.class));
     }
 
     @Bean

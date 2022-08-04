@@ -34,6 +34,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.SQLSyntaxErrorException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -60,6 +61,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             NullPointerException.class,
             TransientPropertyValueException.class,
             SQLSyntaxErrorException.class,
+            SQLIntegrityConstraintViolationException.class,
             IdentifierGenerationException.class,
             NumberFormatException.class,
             IllegalArgumentException.class,
@@ -134,7 +136,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             );
         } else if (ex instanceof NullPointerException) {
             apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else if (ex instanceof SQLSyntaxErrorException) {
+        } else if (
+                ex instanceof SQLSyntaxErrorException ||
+                ex instanceof SQLIntegrityConstraintViolationException
+        ) {
             apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             apiError.setMessage(
                     "An internal error occurred while trying to process the request. Please inform an administrator!"

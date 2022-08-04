@@ -33,7 +33,7 @@ public class Project {
     @POJOData
     private Long created;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     @POJOData
     private List<ProjectContent> content;
 

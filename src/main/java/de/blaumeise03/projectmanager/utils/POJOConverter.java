@@ -17,6 +17,8 @@ public abstract class POJOConverter<F, T> {
 
     static ItemService itemService;
 
+    static CorpService corpService;
+
     public static void setPlayerService(PlayerService playerService) {
         POJOConverter.playerService = playerService;
     }
@@ -31,6 +33,14 @@ public abstract class POJOConverter<F, T> {
 
     public static void setItemService(ItemService itemService) {
         POJOConverter.itemService = itemService;
+    }
+
+    public static CorpService getCorpService() {
+        return corpService;
+    }
+
+    public static void setCorpService(CorpService corpService) {
+        POJOConverter.corpService = corpService;
     }
 
     public static final POJOConverter<Object, Object> DEFAULT_CONVERTER = new POJOConverter<>() {
@@ -96,6 +106,14 @@ public abstract class POJOConverter<F, T> {
             if(!value.isNew())
                 return value.getCid();
             return null;
+        }
+    };
+
+    public static final POJOConverter<Integer, Corp> INTEGER_CORP_POJO_CONVERTER = new POJOConverter<>() {
+        @Override
+        public Corp convert(Integer value) {
+            if(value == null) return null;
+            return corpService.findByID(value);
         }
     };
 
@@ -204,6 +222,7 @@ public abstract class POJOConverter<F, T> {
         INTEGER_PLAYER(Integer.class, Player.class, INTEGER_PLAYER_POJO_CONVERTER),
         PLAYER_STRING(Player.class, String.class, PLAYER_STRING_POJO_CONVERTER),
         CORP_INTEGER(Corp.class, Integer.class, CORP_INTEGER_POJO_CONVERTER),
+        INTEGER_CORP(Integer.class, Corp.class, INTEGER_CORP_POJO_CONVERTER),
         USER_LONG(User.class, Long.class, USER_LONG_POJO_CONVERTER),
         ITEM_LONG(Item.class, Long.class, ITEM_LONG_POJO_CONVERTER),
         LONG_ITEM(Long.class, Item.class, LONG_ITEM_POJO_CONVERTER),

@@ -12,7 +12,7 @@ public class ProjectContentPOJO {
     @POJOData
     private Long id;
 
-    @POJOData
+    @POJOData(blocked = true)
     private Long project;
 
     @POJOData(to = "item")
@@ -33,6 +33,6 @@ public class ProjectContentPOJO {
     @POJOData
     private Double efficiency;
 
-    @POJOData
+    @POJOData(blocked = true)
     private Long parent;
 }

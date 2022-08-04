@@ -5,6 +5,8 @@ import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
 import de.blaumeise03.projectmanager.utils.POJOExtraMapping;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -49,6 +51,7 @@ public class ProjectContent {
 
     @ManyToOne
     @JoinColumn(name="parentID", foreignKey=@ForeignKey(name = "Fk_projectContentParent"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @POJOData
     private ProjectContent parent;
 
