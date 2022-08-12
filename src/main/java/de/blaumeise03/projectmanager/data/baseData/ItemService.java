@@ -40,6 +40,19 @@ public class ItemService {
         return (List<PricePOJO>) POJOMapper.mapAll(priceRepository.findPricesByItemID(id).orElseThrow(() -> new EntityNotFoundException("Item price from item-id " + id + " not found")));
     }
 
+    public Map<Long, List<PricePOJO>> findBatchPrices(List<Long> ids) throws POJOMappingException {
+        //noinspection unchecked
+        List<PricePOJO> pricePOJOS = (List<PricePOJO>) POJOMapper.mapAll(priceRepository.findPricesByItemIDs(ids).orElseThrow(() -> new EntityNotFoundException("Item prices not found, item ids: " + ids)));
+        Map<Long, List<PricePOJO>> res = new HashMap<>();
+        for (PricePOJO pricePOJO : pricePOJOS) {
+            List<PricePOJO> pojos = res.getOrDefault(pricePOJO.getItem(), new ArrayList<>());
+            pojos.add(pricePOJO);
+            if(pojos.size() == 1)
+                res.put(pricePOJO.getItem(), pojos);
+        }
+        return res;
+    }
+
     public BlueprintPOJO findItemBpByID(Long id) throws POJOMappingException {
         return (BlueprintPOJO) POJOMapper.map(blueprintRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("BP with id " + id + " not found")));
     }

@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/item")
@@ -47,6 +48,11 @@ public class ItemController {
     @GetMapping("/{id}/price")
     public List<PricePOJO> getItemPricesByID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
         return itemService.findItemPricesByID(Long.valueOf(id));
+    }
+
+    @PostMapping("/prices")
+    public Map<Long, List<PricePOJO>> getBatchPrices(Authentication authentication, @RequestBody List<Long> ids) throws POJOMappingException {
+        return itemService.findBatchPrices(ids);
     }
 
     @GetMapping("/{id}/blueprint")
