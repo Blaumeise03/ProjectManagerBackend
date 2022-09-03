@@ -3,6 +3,7 @@ package de.blaumeise03.projectmanager.utils;
 import de.blaumeise03.projectmanager.data.baseData.*;
 import de.blaumeise03.projectmanager.data.projects.Project;
 import de.blaumeise03.projectmanager.data.projects.ProjectContent;
+import de.blaumeise03.projectmanager.data.projects.contract.InvestmentContract;
 import de.blaumeise03.projectmanager.userManagement.User;
 
 /**
@@ -155,6 +156,14 @@ public abstract class POJOConverter<F, T> {
         }
     };
 
+    public static final POJOConverter<ItemPOJO, Item> ITEM_POJO_ITEM_POJO_CONVERTER = new POJOConverter<ItemPOJO, Item>() {
+        @Override
+        public Item convert(ItemPOJO itemPOJO) {
+            if (itemPOJO == null || itemPOJO.getItemID() == null) return null;
+            return itemService.findItemByID(itemPOJO.getItemID());
+        }
+    };
+
     public static final POJOConverter<Item.ItemType, String> ITEM_TYPE_STRING_POJO_CONVERTER = new POJOConverter<>() {
         @Override
         public String convert(Item.ItemType value) {
@@ -203,6 +212,14 @@ public abstract class POJOConverter<F, T> {
         }
     };
 
+    public static final POJOConverter<InvestmentContract, Long> INVESTMENT_CONTRACT_LONG_POJO_CONVERTER = new POJOConverter<>() {
+        @Override
+        public Long convert(InvestmentContract value) {
+            if (value == null) return null;
+            return value.getId();
+        }
+    };
+
     /**
      * Converts a given object into an object of type {@link T}.
      *
@@ -227,12 +244,14 @@ public abstract class POJOConverter<F, T> {
         ITEM_LONG(Item.class, Long.class, ITEM_LONG_POJO_CONVERTER),
         LONG_ITEM(Long.class, Item.class, LONG_ITEM_POJO_CONVERTER),
         ITEM_STRING(Item.class, String.class, ITEM_STRING_POJO_CONVERTER),
+        ITEM_POJO_ITEM(ItemPOJO.class, Item.class, ITEM_POJO_ITEM_POJO_CONVERTER),
         ITEM_TYPE_STRING(Item.ItemType.class, String.class, ITEM_TYPE_STRING_POJO_CONVERTER),
         STRING_ITEM_TYPE(String.class, Item.ItemType.class, STRING_ITEM_TYPE_POJO_CONVERTER),
         PRICE_TYPE_STRING(Price.PriceType.class, String.class, PRICE_TYPE_STRING_POJO_CONVERTER),
         STRING_PRICE_TYPE(String.class, Price.PriceType.class, STRING_PRICE_TYPE_POJO_CONVERTER),
         PROJECT_LONG(Project.class, Long.class, PROJECT_LONG_POJO_CONVERTER),
-        PROJECT_CONTENT_LONG(ProjectContent.class, Long.class, PROJECT_CONTENT_LONG_POJO_CONVERTER);
+        PROJECT_CONTENT_LONG(ProjectContent.class, Long.class, PROJECT_CONTENT_LONG_POJO_CONVERTER),
+        INVESTMENT_CONTRACT_LONG(InvestmentContract.class, Long.class, INVESTMENT_CONTRACT_LONG_POJO_CONVERTER);
 
         POJOConverter<?, ?> converter;
         Class<?> from;

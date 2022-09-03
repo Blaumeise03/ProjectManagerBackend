@@ -35,8 +35,13 @@ public class PlayerController {
     }
 
     @GetMapping("/corp/{id}/wallet")
-    public List<WalletPOJO> getAllWalletsByCorpID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
+    public List<WalletPOJO> getAllWalletsByCorpID(Authentication authentication, @PathVariable String id) {
         return playerService.findWalletsByCorpID(Integer.parseInt(id));
+    }
+
+    @GetMapping("/name/{name}")
+    public PlayerPOJO getPlayerByName(Authentication authentication, @PathVariable String name) throws POJOMappingException {
+        return (PlayerPOJO) POJOMapper.map(playerService.findByName(name));
     }
 
     @GetMapping("/{id}")
@@ -45,7 +50,7 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}/wallet")
-    public WalletPOJO getPlayerWalletByID(Authentication authentication, @PathVariable String id) throws POJOMappingException {
+    public WalletPOJO getPlayerWalletByID(Authentication authentication, @PathVariable String id) {
         return playerService.findWalletByID(Integer.parseInt(id));
     }
 }

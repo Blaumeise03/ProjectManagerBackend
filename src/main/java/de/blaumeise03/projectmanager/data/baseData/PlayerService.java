@@ -39,6 +39,10 @@ public class PlayerService {
         return playerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
+    public Player findByName(String name) {
+        return playerRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
+    }
+
     public WalletPOJO findWalletByID(int id) {
         Tuple tuple = playerRepository.findWalletByID(id).orElseThrow(EntityNotFoundException::new);
         return new WalletPOJO(id, tuple.get("name", String.class), tuple.get("verified", BigDecimal.class), tuple.get("unverified", BigDecimal.class));

@@ -29,6 +29,10 @@ public class Item implements Serializable {
     @POJOData
     private ItemType itemType;
 
+    @Column(name = "LogicalOrder")
+    @POJOData
+    private Long order = null;
+
     @OneToMany(mappedBy = "item", orphanRemoval = true, cascade = {CascadeType.ALL})
     private Set<Price> prices;
 

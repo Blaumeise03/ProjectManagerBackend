@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("SELECT i.itemName from Item i")
+    @Query("SELECT i.itemName from Item i ORDER BY i.order, i.itemName")
     List<String> findAllItemNames();
 
     Optional<Item> findByItemName(String name);

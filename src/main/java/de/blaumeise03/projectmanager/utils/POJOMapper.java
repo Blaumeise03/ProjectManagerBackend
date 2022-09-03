@@ -30,13 +30,12 @@ public class POJOMapper {
     public static Object map(Object source, Object target) throws POJOMappingException {
         logger.debug("Mapping: " + source.getClass().getName() + " to: " + target.getClass().getName());
         if(source.getClass().isAnnotationPresent(POJO.class)) {
-            if (
+            if (!(
                     source.getClass().getName().endsWith("POJO") &&
-                            !source.getClass().getName().equalsIgnoreCase(target.getClass().getName() + "POJO")
+                            source.getClass().getName().equalsIgnoreCase(target.getClass().getName() + "POJO")
                     || target.getClass().getName().endsWith("POJO") &&
-                            !target.getClass().getName().equalsIgnoreCase(source.getClass().getName() + "POJO")
-
-            ) {
+                            target.getClass().getName().equalsIgnoreCase(source.getClass().getName() + "POJO")
+            )) {
                 //Class names do not match
                 logger.warn("Suspicious POJO found: " + source.getClass() + " to: " + target.getClass());
             }
@@ -44,6 +43,7 @@ public class POJOMapper {
             Class<?> dFieldFromType = null;
             Class<?> dFieldToType = null;
             String dField = null;
+            String dFieldTo = null;
             POJOConverter<?, ?> dTargetConverter = null;
             try {
                 //Get class of result object
@@ -56,6 +56,7 @@ public class POJOMapper {
                     dFieldFromType = null;
                     dFieldToType = null;
                     dField = null;
+                    dFieldTo = null;
                     dTargetConverter = null;
                     if (field.isAnnotationPresent(POJOData.class)) {
                         logger.debug("Mapping field: {}", field);
@@ -72,6 +73,7 @@ public class POJOMapper {
                         Class<?> orType = field.getType();
                         logger.debug("Field type is: " + orType.getName());
                         logger.debug("Target field will be: " + (pojoData.to().isEmpty() ? field.getName() : pojoData.to()));
+                        dFieldTo = pojoData.to().isEmpty() ? field.getName() : pojoData.to();
                         Class<?> targetType =
                                 pojoData.to().isEmpty() ?
                                         target.getClass().getDeclaredField(field.getName()).getType() :
@@ -131,10 +133,13 @@ public class POJOMapper {
                 throw new POJOMappingException("Error while mapping POJO '" + source.getClass().getName() + "'", e);
             } catch (IllegalArgumentException | NoSuchFieldException e) {
                 throw new POJOMappingException(String.format(
-                        "Error while mapping field '%s' of POJO '%s': '%s' -> '%s' using converter '%s'",
-                        dField, source.getClass().getName(),
-                        dFieldFromType,
-                        dFieldToType,
+                        "Error while mapping %s.%s: %s to %s.%s:%s using converter '%s'",
+                        source.getClass().getSimpleName(),
+                        dField,
+                        dFieldFromType == null ? "N/A" : dFieldFromType.getSimpleName(),
+                        target.getClass().getSimpleName(),
+                        dFieldTo,
+                        dFieldToType == null ? "N/A" : dFieldToType.getSimpleName(),
                         POJOConverter.DefaultConverter.getName(dTargetConverter)
                 ), e);
             }

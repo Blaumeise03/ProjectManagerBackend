@@ -18,6 +18,9 @@ public class ItemPOJO {
     @POJOData
     private String itemType;
 
+    @POJOData
+    private Long order;
+
     private BlueprintPOJO blueprint = null;
 
     private Collection<PricePOJO> prices = null;
