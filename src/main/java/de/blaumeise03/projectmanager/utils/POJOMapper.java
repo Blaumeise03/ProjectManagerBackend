@@ -96,7 +96,11 @@ public class POJOMapper {
                                 resClass.getMethod(setterName, targetType).invoke(target, resultValue);
                             } else if (pojoData.recursive()) {
                                 logger.debug("Value is a POJO object, calling map function recursively");
-                                Object resultValue = map(value);
+                                Object resultValue = null;
+                                if (value != null) {
+                                    resultValue = map(value);
+                                }
+
                                 logger.debug("Value was converted recursively");
                                 resClass.getMethod(setterName, targetType).invoke(target, resultValue);
                             } else {

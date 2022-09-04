@@ -14,7 +14,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/current")
-    public UserSessionInfoPOJO getSessionInfo(Authentication authentication) throws MissingPermissionsException {
+    public UserSessionInfoPOJO current(Authentication authentication) throws MissingPermissionsException {
         return userService.getFromSession(authentication);
     }
 }

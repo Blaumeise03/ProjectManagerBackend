@@ -65,6 +65,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             IdentifierGenerationException.class,
             NumberFormatException.class,
             IllegalArgumentException.class,
+            DataValidationException.class,
             CookieTheftException.class,
     })
     protected ResponseEntity<Object> handleDefaultException(Exception ex, WebRequest request) {
@@ -119,11 +120,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             //Custom error handling
         if (ex instanceof EntityNotFoundException) {
             apiError.setStatus(HttpStatus.NOT_FOUND);
-            apiError.setMessage("Requested resource was not found");
+            //apiError.setMessage("Requested resource was not found: " + ex.getMessage());
         } else if (ex instanceof PropertyValueException) {
             apiError.setStatus(HttpStatus.BAD_REQUEST);
             apiError.setMessage("Request content is malformed");
         } else if (ex instanceof NumberFormatException) {
+            apiError.setStatus(HttpStatus.BAD_REQUEST);
+        } else if (ex instanceof DataValidationException) {
             apiError.setStatus(HttpStatus.BAD_REQUEST);
         } else if (ex instanceof IllegalArgumentException)  {
             apiError.setStatus(HttpStatus.BAD_REQUEST);
