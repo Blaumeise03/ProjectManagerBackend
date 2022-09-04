@@ -3,6 +3,7 @@ package de.blaumeise03.projectmanager.data.projects.contract;
 import de.blaumeise03.projectmanager.data.baseData.Player;
 import de.blaumeise03.projectmanager.utils.POJO;
 import de.blaumeise03.projectmanager.utils.POJOData;
+import de.blaumeise03.projectmanager.utils.POJOExtraMapping;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,15 +24,16 @@ public class InvestmentContract {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "playerID", nullable = false)
+    @JoinColumn(name = "playerID", nullable = false, foreignKey=@ForeignKey(name = "Fk_contract_player"))
     @POJOData(to = "playerID")
+    @POJOExtraMapping(to = "playerName")
     private Player player;
 
     @Column(name = "created", nullable = false)
     @POJOData
     private Long created;
 
-    @OneToMany(mappedBy = "investmentContract")
+    @OneToMany(mappedBy = "investmentContract", cascade = CascadeType.ALL)
     @POJOData(recursive = true)
     private List<ContractItem> items;
 

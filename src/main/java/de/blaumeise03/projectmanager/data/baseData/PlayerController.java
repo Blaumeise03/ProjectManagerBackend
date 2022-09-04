@@ -28,6 +28,11 @@ public class PlayerController {
         return (List<PlayerPOJO>) POJOMapper.mapAll(playerService.getByCorpTag(tag));
     }
 
+    @GetMapping("/corpTag/{tag}/names")
+    public List<String> getPlayerNamesByCorpTag(Authentication authentication, @PathVariable String tag) throws POJOMappingException {
+        return playerService.findNamesByCorp(tag);
+    }
+
     @SuppressWarnings("unchecked")
     @GetMapping("/corp/{id}")
     public List<PlayerPOJO> getPlayersByCorpID(Authentication authentication, @PathVariable String id) throws POJOMappingException {

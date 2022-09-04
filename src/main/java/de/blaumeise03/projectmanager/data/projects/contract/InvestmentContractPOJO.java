@@ -18,6 +18,9 @@ public class InvestmentContractPOJO {
     @POJOData(blocked = true, to = "player")
     private Integer playerID;
 
+    @POJOData(blocked = true)
+    private String playerName;
+
     @POJOData
     private Long created;
 

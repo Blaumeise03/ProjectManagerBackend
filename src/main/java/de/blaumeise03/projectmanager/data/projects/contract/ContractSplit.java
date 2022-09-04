@@ -23,7 +23,7 @@ public class ContractSplit {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "contractID", nullable = false)
+    @JoinColumn(name = "contractID", nullable = false, foreignKey=@ForeignKey(name = "Fk_splitContract"))
     @POJOData
     private InvestmentContract contract;
 
@@ -32,7 +32,7 @@ public class ContractSplit {
     private Set<SplitItem> splitItems;
 
     @ManyToOne
-    @JoinColumn(name = "projectID", nullable = true)
+    @JoinColumn(name = "projectID", foreignKey=@ForeignKey(name = "Fk_splitProject"))
     @POJOData
     private Project project;
 

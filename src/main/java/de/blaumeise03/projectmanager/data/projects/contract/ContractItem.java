@@ -22,7 +22,7 @@ public class ContractItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "itemID", nullable = false)
+    @JoinColumn(name = "itemID", nullable = false, foreignKey=@ForeignKey(name = "Fk_contractItem_Item"))
     @POJOData(recursive = true)
     private Item item;
 
@@ -31,7 +31,7 @@ public class ContractItem {
     private Long quantity;
 
     @ManyToOne
-    @JoinColumn(name = "contractID", nullable = false)
+    @JoinColumn(name = "contractID", nullable = false, foreignKey=@ForeignKey(name = "Fk_contractItem_Contract"))
     @POJOData
     private InvestmentContract investmentContract;
 

@@ -14,4 +14,7 @@ public interface PlayerRepository extends JpaRepository<Player, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT (SELECT name FROM db_players WHERE id=?1) AS name, (SELECT (SELECT COALESCE(SUM(price),0) priceSum FROM db_transactions WHERE idto=?1 AND verified=1) - (SELECT COALESCE(SUM(price),0) priceSum FROM db_transactions WHERE idfrom=?1 AND verified=1) )AS verified, (SELECT (SELECT COALESCE(SUM(price),0) priceSum FROM db_transactions WHERE idto=?1 AND verified=0) - (SELECT COALESCE(SUM(price),0) priceSum FROM db_transactions WHERE idfrom=?1 AND verified=0) )AS unverified")
     Optional<Tuple> findWalletByID(Integer id);
+
+    @Query(nativeQuery = true, value = "SELECT name FROM db_players WHERE corpid=?1")
+    List<String> findNamesByCorpID(Integer id);
 }

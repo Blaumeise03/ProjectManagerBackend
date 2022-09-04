@@ -58,4 +58,9 @@ public class PlayerService {
         }
         return res;
     }
+
+    public List<String> findNamesByCorp(String tag) {
+        Corp corp = corpRepository.findByTag(tag).orElseThrow(() -> new EntityNotFoundException("Corp with tag " + tag + " was not found!"));
+        return playerRepository.findNamesByCorpID(corp.getCid());
+    }
 }
