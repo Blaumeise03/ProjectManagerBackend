@@ -2,7 +2,6 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
 
-    <logger name="org.springframework.web" level="INFO" additivity="false"/>
     <timestamp key="fileTimestamp" timeReferene="contextBirth" datePattern="yyyy-MM-dd'_'HH-mm-ss.SSS"/>
 
     <!-- Send debug messages to System.out -->
@@ -35,22 +34,27 @@
         <appender-ref ref="FILE" />
     </logger>
 
+    <logger name="de.blaumeise03.projectmanager.LoggingInterceptor" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+
     <logger name="de.blaumeise03.projectmanager.utils.POJOMapper" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="DEBUG" additivity="false">
+    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="org.springframework.web" level="DEBUG" additivity="false">
+    <logger name="org.springframework.web" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </logger>
 
-    <logger name="org.springframework.security" level="DEBUG" additivity="false">
+    <logger name="org.springframework.security" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </logger>
@@ -60,5 +64,4 @@
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
-
 </configuration>
