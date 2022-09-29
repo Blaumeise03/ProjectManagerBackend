@@ -20,6 +20,7 @@ public class ApiError {
     private String path = null;
     private String user = null;
     private String session = null;
+    private String ipHash = null;
     private List<ApiSubError> subErrors;
 
     private ApiError() {

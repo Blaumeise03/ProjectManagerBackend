@@ -13,9 +13,9 @@ public class LoggingInterceptor implements HandlerInterceptor {
     Logger logger = LoggerFactory.getLogger(LoggingInterceptor.class);
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) throws Exception {
         Principal userPrincipal = request.getUserPrincipal();
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         String username = "N/A";
         if(userPrincipal != null) username = userPrincipal.getName();
         String sessionID = "N/A";
@@ -25,16 +25,18 @@ public class LoggingInterceptor implements HandlerInterceptor {
             sessionID = sessionID.substring(0, i) + "********";
         }
         logger.info(
-                "Processed request from user '{}' (IP Hash '{}', session '{}') to: '{}'",
+                "Processed {} request [{}] from user '{}' (IP Hash '{}', session '{}') to: '{}: {}'",
+                request.getMethod(),
+                response.getStatus(),
                 username,
                 request.getRemoteAddr().hashCode(),
                 sessionID,
+                request.getMethod(),
                 request.getRequestURI()
         );
         logger.debug("IP for Hash {} is " + request.getRemoteAddr(), request.getRemoteAddr().hashCode());
         logger.debug("Request cookies: " + request.getHeader("cookie"));
         if (!response.getHeaders("set-cookie").isEmpty())
             logger.debug("Response Set-Cookie: " + response.getHeaders("set-cookie"));
-        return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 }

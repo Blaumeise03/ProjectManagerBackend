@@ -84,6 +84,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String session = request.getSessionId();
         int i = Math.max(session.length() - 8, 0);
         apiError.setSession(session.substring(0, i) + "********");
+        if (request instanceof ServletWebRequest)
+            apiError.setIpHash(String.valueOf(((ServletWebRequest) request).getRequest().getRemoteAddr().hashCode()));
 
         //Overwriting default error handlers, see ResponseEntityExceptionHandler#handleException
         if (ex instanceof HttpRequestMethodNotSupportedException) {
@@ -153,7 +155,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             apiError.setStatus(HttpStatus.UNAUTHORIZED);
         }
 
-        logger.error("An API Error was caught!", ex);
+        logger.error("Error on request from user '{}' (IP Hash '{}', session '{}') to: '{}':",
+                apiError.getUser(),
+                apiError.getIpHash(),
+                apiError.getSession(),
+                apiError.getPath(),
+                ex);
         return buildResponseEntity(apiError);
     }
 
