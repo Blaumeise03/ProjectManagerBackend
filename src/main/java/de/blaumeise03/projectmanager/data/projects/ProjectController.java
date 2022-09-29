@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
@@ -16,8 +18,22 @@ public class ProjectController {
         return projectService.getProjectByID(Long.valueOf(id));
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteProjectByID(Authentication authentication, @PathVariable String id) {
+        projectService.deleteProjectByID(Integer.parseInt(id));
+    }
+
+    @GetMapping("/all")
+    public List<ProjectPOJO> getAllProjects(Authentication authentication,
+                                            @RequestParam(defaultValue = "0") String page,
+                                            @RequestParam(defaultValue = "50") String length
+    ) {
+        return projectService.getAllProjects(Integer.parseInt(page), Integer.parseInt(length));
+    }
+
     @PostMapping
-    public void saveProject(Authentication authentication, @RequestBody ProjectPOJO projectPOJO) throws POJOMappingException {
-        projectService.save(projectPOJO);
+    public ProjectPOJO saveProject(Authentication authentication, @RequestBody ProjectPOJO projectPOJO) throws POJOMappingException {
+        Project project = projectService.save(projectPOJO);
+        return ProjectService.mapProject(project);
     }
 }

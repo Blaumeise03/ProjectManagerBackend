@@ -4,6 +4,9 @@ import de.blaumeise03.projectmanager.data.baseData.ItemService;
 import de.blaumeise03.projectmanager.exceptions.POJOMappingException;
 import de.blaumeise03.projectmanager.utils.POJOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -20,8 +24,7 @@ public class ProjectService {
     @Autowired
     private ProjectContentRepository projectContentRepository;
 
-    public ProjectPOJO getProjectByID(Long id) throws POJOMappingException {
-        Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project with id " + id + " not found!"));
+    public static ProjectPOJO mapProject(Project project) throws POJOMappingException {
         ProjectPOJO res = (ProjectPOJO) POJOMapper.map(project);
         for (ProjectContentPOJO c : res.getContent()) {
             ItemService.mapFullItem(
@@ -37,7 +40,24 @@ public class ProjectService {
         return res;
     }
 
-    public void save(ProjectPOJO projectPOJO) throws POJOMappingException {
+    public ProjectPOJO getProjectByID(Long id) throws POJOMappingException {
+        Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project with id " + id + " not found!"));
+        return mapProject(project);
+    }
+
+    public List<ProjectPOJO> getAllProjects(int page, int length) {
+        Pageable pageable = PageRequest.of(page, length, Sort.by("created").descending());
+        return projectRepository.findAll(pageable).stream().map(p -> {
+            ProjectPOJO projectPOJO = new ProjectPOJO();
+            projectPOJO.setId(p.getId());
+            projectPOJO.setCreated(p.getCreated());
+            projectPOJO.setCorp(p.getCorp().getCid());
+            projectPOJO.setName(p.getName());
+            return projectPOJO;
+        }).collect(Collectors.toList());
+    }
+
+    public Project save(ProjectPOJO projectPOJO) throws POJOMappingException {
         Project project;
         if (projectPOJO.getId() != null) {
             project = projectRepository.findById(projectPOJO.getId()).orElseThrow(() -> new EntityNotFoundException("Project with id " + projectPOJO.getId() + " not found, can't save it!"));
@@ -54,7 +74,7 @@ public class ProjectService {
                     }
                 }
             }
-            List<ProjectContentPOJO> newContent = new ArrayList<>();
+            //List<ProjectContentPOJO> newContent = new ArrayList<>();
             List<ProjectContent> nContent = new ArrayList<>();
             for (ProjectContentPOJO contentPOJO : projectPOJO.getContent()) {
                 boolean found = false;
@@ -65,7 +85,7 @@ public class ProjectService {
                     }
                 }
                 if (!found) {
-                    newContent.add(contentPOJO);
+                    //newContent.add(contentPOJO);
                     ProjectContent content = (ProjectContent) POJOMapper.map(contentPOJO);
                     contentMap.put(contentPOJO, content);
                     nContent.add(content);
@@ -133,6 +153,14 @@ public class ProjectService {
                 }
             }
         }
-        projectRepository.save(project);
+        return projectRepository.save(project);
+    }
+
+    public void deleteProjectByID(long id) {
+        Project project = projectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Project with ID " + id + " was not found!"));
+        projectContentRepository.deleteAll(project.getContent());
+        projectRepository.delete(project);
+        projectContentRepository.flush();
+        projectRepository.flush();
     }
 }
